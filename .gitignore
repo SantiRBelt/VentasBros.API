@@ -1,0 +1,131 @@
+# Carpetas de salida de build
+bin/
+obj/
+out/
+
+# Archivos de configuración de usuario
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos de Visual Studio
+.vs/
+*.vscode/
+
+# Archivos de depuración
+*.pdb
+*.dll
+*.exe
+
+# Archivos de NuGet
+packages/
+*.nupkg
+*.snupkg
+# The packages folder can be ignored because of Package Restore
+**/[Pp]ackages/*
+# except build/, which is used as an MSBuild target.
+!**/[Pp]ackages/build/
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/[Pp]ackages/repositories.config
+# NuGet v3's project.json files produces more ignorable files
+*.nuget.props
+*.nuget.targets
+
+# Entity Framework Core
+Migrations/
+
+# Archivos de configuración sensibles
+appsettings.local.json
+appsettings.secrets.json
+secrets.json
+
+# Archivos de base de datos local
+*.mdf
+*.ldf
+*.ndf
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.cache
+*.swp
+*.bak
+
+# Carpetas de node (si usas herramientas frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de cobertura de código
+coverage/
+*.coverage
+*.coveragexml
+
+# Archivos de profiling
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Archivos de JetBrains Rider
+.idea/
+*.sln.iml
+
+# Archivos de SQL Server
+*.mdf
+*.ldf
+
+# Archivos específicos de Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archivos específicos de macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archivos específicos de Linux
+*~
+
+# Archivos de pruebas
+TestResults/
+*.trx
+*.xml
+
+# Archivos de Docker (si los usas)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Archivos de Azure (si los usas)
+*.pubxml
+*.publishsettings
+
+# Archivos de configuración de desarrollo local
+launchSettings.json
+
+# Archivos de certificados y claves
+*.pfx
+*.p12
+*.key
+*.crt
+*.pem
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Archivos de Swagger generados automáticamente
+wwwroot/swagger/
+
+# Archivos de Entity Framework
+*.edmx.diagram
+*.edmx.sql
+

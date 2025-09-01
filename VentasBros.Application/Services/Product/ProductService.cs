@@ -1,0 +1,60 @@
+using AutoMapper;
+using VentasBros.Application.DTOs.Common;
+using VentasBros.Application.DTOs.Product;
+using VentasBros.Domain.Entities;
+using VentasBros.Domain.Interfaces;
+
+namespace VentasBros.Application.Services
+{
+    public class ProductService : IProductService
+    {
+        private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper;
+
+        public ProductService(IProductRepository productRepository, IMapper mapper)
+        {
+            _productRepository = productRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<ProductDto?> GetByIdAsync(int id)
+        {
+            var product = await _productRepository.GetByIdWithImagesAsync(id);
+            return product != null ? _mapper.Map<ProductDto>(product) : null;
+        }
+
+        public async Task<PagedResult<ProductDto>> GetPagedAsync(int page, int pageSize, string? search = null, int? categoryId = null, bool onlyActive = false)
+        {
+            var (items, total) = await _productRepository.GetPagedWithFiltersAsync(page, pageSize, search, categoryId, onlyActive);
+            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(items);
+
+            return new PagedResult<ProductDto>
+            {
+                Items = productDtos,
+                Page = page,
+                PageSize = pageSize,
+                Total = total
+            };
+        }
+
+        public async Task<ProductDto> CreateAsync(CreateProductDto dto)
+        {
+            var product = _mapper.Map<Product>(dto);
+            var createdProduct = await _productRepository.AddAsync(product);
+            return _mapper.Map<ProductDto>(createdProduct);
+        }
+
+        public async Task<ProductDto> UpdateAsync(int id, UpdateProductDto dto)
+        {
+            var product = _mapper.Map<Product>(dto);
+            product.Id = id;
+            var updatedProduct = await _productRepository.UpdateAsync(product);
+            return _mapper.Map<ProductDto>(updatedProduct);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _productRepository.DeleteAsync(id);
+        }
+    }
+}
