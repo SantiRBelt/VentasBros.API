@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace VentasBros.Application.DTOs.Common
 {
     public class PagedResult<T>

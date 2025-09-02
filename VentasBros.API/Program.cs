@@ -1,12 +1,15 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using VentasBros.Infrastructure.Data;
-using VentasBros.Domain.Interfaces;
-using VentasBros.Infrastructure.Repositories;
-using VentasBros.Application.Services;
 using VentasBros.API.Mappings;
+using VentasBros.API.Middleware;
+using VentasBros.Application.Interfaces;
+using VentasBros.Application.Services;
+using VentasBros.Application.Services.Security;
+using VentasBros.Domain.Interfaces;
+using VentasBros.Infrastructure.Data;
+using VentasBros.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +29,33 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Configura CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        policy =>
+        {
+            policy.WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:4200",      // Tu frontend Angular
+                "http://localhost:5173",
+                "https://localhost:7157",     // Tu API en HTTPS
+                "http://localhost:5262"
+                ).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        });
+});
 
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -58,10 +85,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}else
+{
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
+app.UseMiddleware<TokenRefreshMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 

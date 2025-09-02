@@ -1,4 +1,6 @@
 using AutoMapper;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VentasBros.Application.DTOs.Common;
 using VentasBros.Application.DTOs.Product;
 using VentasBros.Domain.Entities;
@@ -23,16 +25,51 @@ namespace VentasBros.Application.Services
             return product != null ? _mapper.Map<ProductDto>(product) : null;
         }
 
-        public async Task<PagedResult<ProductDto>> GetPagedAsync(int page, int pageSize, string? search = null, int? categoryId = null, bool onlyActive = false)
+        public async Task<PagedResult<ProductDto>> GetPagedAsync(ProductFilterDto filter)
         {
-            var (items, total) = await _productRepository.GetPagedWithFiltersAsync(page, pageSize, search, categoryId, onlyActive);
+            var (items, total) = await _productRepository.GetPagedWithFiltersAsync(
+                filter.Page,
+                filter.PageSize,
+                filter.Search,
+                filter.CategoryId,
+                filter.OnlyActive,
+                filter.MinPrice,
+                filter.MaxPrice,
+                filter.Sort,
+                filter.Direction);
+
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(items);
 
             return new PagedResult<ProductDto>
             {
                 Items = productDtos,
-                Page = page,
-                PageSize = pageSize,
+                Page = filter.Page,
+                PageSize = filter.PageSize,
+                Total = total
+            };
+        }
+
+        public async Task<PagedResult<ProductDto>> GetCatalogPagedAsync(CatalogFilterDto filter)
+        {
+            // Para el catálogo público, siempre filtrar solo productos activos
+            var (items, total) = await _productRepository.GetPagedWithFiltersAsync(
+                filter.Page,
+                filter.PageSize,
+                filter.Search,
+                filter.CategoryId,
+                onlyActive: true, // Siempre true para catálogo público
+                filter.MinPrice,
+                filter.MaxPrice,
+                filter.Sort,
+                filter.Direction);
+
+            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(items);
+
+            return new PagedResult<ProductDto>
+            {
+                Items = productDtos,
+                Page = filter.Page,
+                PageSize = filter.PageSize,
                 Total = total
             };
         }

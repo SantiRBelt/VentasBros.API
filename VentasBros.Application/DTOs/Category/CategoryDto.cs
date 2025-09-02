@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace VentasBros.Application.DTOs.Category
 {
     public class CategoryDto
